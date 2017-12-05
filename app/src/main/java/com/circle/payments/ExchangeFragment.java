@@ -2,13 +2,11 @@ package com.circle.payments;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
-import android.support.v7.app.AppCompatActivity;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
@@ -22,67 +20,55 @@ import com.android.volley.toolbox.StringRequest;
 import java.text.DecimalFormat;
 
 
-public class ExchangeActivity extends AppCompatActivity {
+public class ExchangeFragment extends android.support.v4.app.Fragment {
 
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-            switch (item.getItemId()) {
-
-                case R.id.navigation_home:
-                    // Nothing happens, users stays in SellActivity
-                    return true;
-                case R.id.navigation_dashboard:
-                    return true;
-                case R.id.navigation_notifications:
-                    return true;
-            }
-            return false;
-        }
-    };
+    public static android.support.v4.app.Fragment newInstance() {
+        ExchangeFragment fragment = new ExchangeFragment();
+        return fragment;
+    }
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_exchange);
+    }
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.bnav);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+    @Override
+    public View onCreateView (LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        final View view = inflater.inflate(R.layout.fragment_exchange, container, false);
 
-        Intent intent = getIntent();
-        String value = intent.getStringExtra("value");
+//        Intent intent = getActivity().getIntent();
+//        String value = intent.getStringExtra("value");
+        String value = getArguments().getString("value");
 
-        TextView txtView = (TextView) findViewById(R.id.BRL);
+        TextView txtView = (TextView) view.findViewById(R.id.BRL);
         txtView.setText("R$ " + value);
 
-        Button back = (Button) findViewById(R.id.buttonBack);
+        Button back = (Button) view.findViewById(R.id.buttonBack);
 
         back.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Intent myIntent = new Intent(ExchangeActivity.this, SellActivity.class);
-                startActivity(myIntent);
-                finish();
+            public void onClick(View clickview) {
+//                Intent myIntent = new Intent(ExchangeFragment.this, SellFragment.class);
+//                startActivity(myIntent);
+//                finish();
             }
         });
 
-        Button go = (Button) findViewById(R.id.buttonGo);
+        Button go = (Button) view.findViewById(R.id.buttonGo);
 
         go.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                RequestQueue mRequestQueue = JsonComunication.getInstance(getApplicationContext()).getRequestQueue();
+            public void onClick(View clickview) {
+                RequestQueue mRequestQueue = JsonComunication.getInstance(getActivity().getApplicationContext()).getRequestQueue();
                 // Start the queue
                 mRequestQueue.start();
 
-                Intent intent = getIntent();
+                Intent intent = getActivity().getIntent();
                 String value = intent.getStringExtra("value");
 
-                RadioGroup group = (RadioGroup)  findViewById(R.id.coins);
+                RadioGroup group = view.findViewById(R.id.coins);
                 int checkedId = group.getCheckedRadioButtonId();
-                RadioButton checkedRadioButton = (RadioButton) group.findViewById(checkedId);
+                RadioButton checkedRadioButton = group.findViewById(checkedId);
                 String str = checkedRadioButton.getText().toString();
 
                 boolean nothing = value.isEmpty() ? true : false;
@@ -115,7 +101,7 @@ public class ExchangeActivity extends AppCompatActivity {
                                     // Do something with the response
                                     //                            TextView txtView = (TextView) findViewById(R.id.editText);
                                     //                            String txt = txtView.getText().subSequence(3, txtView.getText().length()).toString();
-                                    //                            Intent myIntent = new Intent(ExchangeActivity.this, NextActivity.class);
+                                    //                            Intent myIntent = new Intent(ExchangeFragment.this, NextActivity.class);
                                     //                            myIntent.putExtra("value", txt); //Optional parameters
                                     //                            startActivity(myIntent);
                                     //                            finish();
@@ -135,15 +121,15 @@ public class ExchangeActivity extends AppCompatActivity {
             }
         });
 
-        TextView brlText = findViewById(R.id.BRL);
-        final TextView cptText = findViewById(R.id.CPT);
+        TextView brlText = view.findViewById(R.id.BRL);
+        final TextView cptText = view.findViewById(R.id.CPT);
 
-        RadioGroup radioGroup = findViewById(R.id.coins);
+        RadioGroup radioGroup = view.findViewById(R.id.coins);
 
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             public void onCheckedChanged(RadioGroup group, int checkedId) {
                 // This will get the radiobutton that has changed in its check state
-                RadioButton checkedRadioButton = (RadioButton) group.findViewById(checkedId);
+                RadioButton checkedRadioButton = group.findViewById(checkedId);
                 String str = checkedRadioButton.getText().toString();
 
                 boolean nothing = str.isEmpty() ? true : false;
@@ -172,7 +158,7 @@ public class ExchangeActivity extends AppCompatActivity {
                 if (nothing)
                     cptText.setText("First choose a cripto currency");
                 else {
-                    TextView brlText = findViewById(R.id.BRL);
+                    TextView brlText = view.findViewById(R.id.BRL);
                     DecimalFormat formater = new DecimalFormat("0.########");
                     double x = Double.parseDouble(brlText.getText().subSequence(3, brlText.getText().length()).toString()) / d;
                     cptText.setText(formater.format(x).toString() + " " + modifier);
@@ -180,5 +166,6 @@ public class ExchangeActivity extends AppCompatActivity {
 
             }
         });
+        return view;
     }
 }

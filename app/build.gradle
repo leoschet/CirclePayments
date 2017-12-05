@@ -6,15 +6,34 @@ android {
         applicationId "com.circle.payments"
         minSdkVersion 22
         targetSdkVersion 26
-        versionCode 1
-        versionName "1.0"
+        versionCode 4
+        versionName "4.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
+    signingConfigs {
+
+        release {
+            storeFile file("../distribution/CieloGarage.jks")
+            storePassword "GarageInovacao2017"
+            keyAlias "CieloGarageAndroidKey"
+            keyPassword "GarageInovacao2017"
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            buildConfigField "String", "PRODUCTS_HOST",
+                    '"http://private-23e8b-razecstore.apiary-mock.com"'
+        }
+
     }
 }
 
